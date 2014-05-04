@@ -2,6 +2,15 @@
 # Extracts subject, condition, and rating information.
 # Dan Parker January 2013
 
+# Fixes:
+# Corrected indexing for Item number: DP May 04, 2014
+
+# 1. cd to directory where this script is saved
+# 2. open your command line (e.g. terminal)
+# 3. execute "python Ibex-PreProcess.py"
+# 4. Enter necessary informations at the prompts
+# 5. Let the script do its magic
+
 
 import string
 import os
@@ -10,20 +19,19 @@ import fileinput
 import re
 
 # Get user information
-myFile = raw_input("Name of IBEX data file (enter full path if file is not in current directory): ")
+myFile = raw_input("Name of IBEX data file (enter full path from /Users/...): ")
 myData = open(myFile)
 myData = myData.read().split('\n')
 
 numSubjs = int(input("How many participants did you test? "))
 numItems = int(input("How many items were in your experiment  (items + fillers)? "))
 
-out = raw_input("Name of output file (enter full path if you want to save to a different directory): ")
+out = raw_input("Name of output file (enter full path /Users/...): ")
 outputFile = open(out, 'w')
 
 # Extract relevant data
 prep1 = []
 for line in myData:
-    #if "NULL,NULL" in line:
 	if re.search(r"NULL\,[1-7]\,", line):
 		prep1.append(line)
 		
@@ -37,12 +45,12 @@ for line in prep1:
 myRatings = []
 for line in myData:
 	temp = line.split(",")
-	item = temp[3]
-	cond = temp[5]
+    cond = temp[5]
+	item = temp[6]
 	rating = temp[8]
 	rt = temp[10]
 	#print (cond + "\t" + rating)
-	myRatings.append(item + "\t" + cond + "\t" + rating + "\t" + rt)
+	myRatings.append(cond + "\t" + item + "\t" + rating + "\t" + rt)
 	
 # Add subject information
 subj = []
@@ -60,6 +68,6 @@ for i, (a, b) in enumerate(zip(subj,myRatings)):
 for line in output:
   	outputFile.write(line + "\n")
 
-print "That's all, Folks!"
+print "That's it!"
 
 sys.exit()
